@@ -123,3 +123,21 @@ auth-service/
 ├── pyproject.toml                     # Project metadata and dependency management
 └── README.md
 ```
+
+---
+
+## Technology Stack
+
+- **Python 3.11+** 
+- **FastAPI** — high-performance web framework
+- **PostgreSQL** — primary relational database
+- **SQLAlchemy** — ORM and database interaction
+- **Alembic** — database migrations
+- **Pydantic** — database migrations
+- **JWT (JSON Web Tokens)** — stateless authentication
+- **Passlib / bcrypt** — stateless authentication
+- **Pytest** — automated testing
+
+The stack was chosen for reliability, clarity, and real-world backend relevance.
+
+---
