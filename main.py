@@ -69,10 +69,13 @@ def create_user(email: str, password: str):
         conn.commit()
 
         return {"message": "User created"}
+    
+    except errors.UniqueViolation:
+        conn.rollback()
+        return {"error": "Email already exists"}
 
     except Exception as e:
-        if "duplicate key" in str(e):
-            return {"error": "Email already exists"}
+        conn.rollback()
         return {"error": str(e)}
 
     finally:
