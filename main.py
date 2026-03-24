@@ -46,3 +46,25 @@ def create_table():
     finally:
         cursor.close()
         conn.close()
+
+@app.post("/create-user")
+def create_user(email: str, password: str):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "INSERT INTO users (email, password) VALUES (%s, %s)",
+            (email, password)
+        )
+
+        conn.commit()
+
+        return {"message": "User created"}
+
+    except Exception as e:
+        return {"error": str(e)}
+
+    finally:
+        cursor.close()
+        conn.close()
