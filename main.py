@@ -68,3 +68,21 @@ def create_user(email: str, password: str):
     finally:
         cursor.close()
         conn.close()
+
+@app.get("/users")
+def get_users():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT id, email, created_at FROM users;")
+        users = cursor.fetchall()
+
+        return {"users": users}
+
+    except Exception as e:
+        return {"error": str(e)}
+
+    finally:
+        cursor.close()
+        conn.close()
