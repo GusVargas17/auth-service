@@ -1,5 +1,7 @@
+import bcrypt
 from fastapi import FastAPI
 from db import get_connection
+from psycopg2 import errors
 
 app = FastAPI()
 
@@ -20,6 +22,11 @@ def test_db():
     finally:
         cursor.close()
         conn.close()
+
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
 @app.get("/create-table")
 def create_table():
@@ -52,10 +59,11 @@ def create_user(email: str, password: str):
     try:
         conn = get_connection()
         cursor = conn.cursor()
+        hashed_password = hash_password(password)
 
         cursor.execute(
             "INSERT INTO users (email, password) VALUES (%s, %s)",
-            (email, password)
+            (email, hashed_password)
         )
 
         conn.commit()
@@ -63,6 +71,8 @@ def create_user(email: str, password: str):
         return {"message": "User created"}
 
     except Exception as e:
+        if "duplicate key" in str(e):
+            return {"error": "Email already exists"}
         return {"error": str(e)}
 
     finally:
