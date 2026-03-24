@@ -1,5 +1,6 @@
 import bcrypt
 from fastapi import FastAPI
+from fastapi import HTTPException
 from db import get_connection
 from psycopg2 import errors
 
@@ -95,6 +96,36 @@ def get_users():
 
     except Exception as e:
         return {"error": str(e)}
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.post("/login")
+def login(email: str, password: str):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT password FROM users WHERE email = %s",
+            (email,)
+        )
+
+        user = cursor.fetchone()
+
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        stored_password = user[0]
+
+        if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+            return {"message": "Login successful"}
+        else:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
     finally:
         cursor.close()
