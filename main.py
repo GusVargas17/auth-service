@@ -20,3 +20,29 @@ def test_db():
     finally:
         cursor.close()
         conn.close()
+
+@app.get("/create-table")
+def create_table():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+        conn.commit()
+
+        return {"message": "Users table created"}
+
+    except Exception as e:
+        return {"error": str(e)}
+    
+    finally:
+        cursor.close()
+        conn.close()
