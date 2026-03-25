@@ -9,7 +9,7 @@ def register_user(email: str, password: str):
     return {"message": "User created"}
 
 def login_user(email: str, password: str):
-    user = get_user_by_email
+    user = get_user_by_email(email)
 
     if not user:
         return None
