@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.services.auth_service import register_user, login_user
-from app.repositories.user_repository import get_all_users
+from app.repositories.user_repository import get_all_users, get_user_by_email
 
 router = APIRouter()
 
@@ -21,5 +21,7 @@ def login_endpoint(email: str, password: str):
     return result
 
 @router.get("/users")
-def users():
+def users(email: str = None):
+    if email:
+        return {"user": get_user_by_email(email)}
     return {"users": get_all_users()}
