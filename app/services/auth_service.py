@@ -1,8 +1,9 @@
-import bcrypt
 from app.repositories.user_repository import create_user, get_user_by_email
+from app.core.security.jwt_handler import create_access_token
+from app.core.security.password_handler import hash_password, verify_password
 
 def register_user(email: str, password: str):
-    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    hashed_password = hash_password(password)
 
     create_user(email, hashed_password)
     
@@ -16,7 +17,12 @@ def login_user(email: str, password: str):
     
     stored_password = user[2]
 
-    if bcrypt.checkpw(password.encode(), stored_password.encode()):
-        return {"message": "Login successful"}
+    if not verify_password(password, stored_password):
+        return None
 
-    return None
+    token = create_access_token({"sub": user[0]})
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
