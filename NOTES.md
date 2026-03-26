@@ -39,6 +39,10 @@
 
 ## Decisions
   - Using raw SQL instead of ORM to better understand database behavior
+  - Keeping endpoints simple first, then refactoring into cleaner structures once the logic is clear
+  - Combining multiple behaviors in a single endpoint (e.g. list and filter) before splitting into more RESTful routes
+  - Handling authentication manually before introducing abstractions (e.g. dependencies or middleware)
+  - Separating security logic (hashing, JWT) from business logic to follow single responsibility principle
 
 ## Rules
   - Do not mix responsibilities in a single layer
