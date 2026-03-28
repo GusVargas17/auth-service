@@ -20,7 +20,7 @@ def login_user(email: str, password: str):
     if not verify_password(password, stored_password):
         return None
 
-    token = create_access_token({"sub": user[0]})
+    token = create_access_token({"sub": str(user[0])})
 
     return {
         "access_token": token,
