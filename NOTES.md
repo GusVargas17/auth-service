@@ -57,6 +57,7 @@
 - `"password authentication failed"` → Incorrect database credentials
 - `UniqueViolation` → Duplicate value in UNIQUE column
 - `JWT ERROR: Subject must be a string` → `sub` must be string
+- `ResponseValidationError` occurs when returned data does not match UserResponse
 
 ---
 
