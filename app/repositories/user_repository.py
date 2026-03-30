@@ -30,6 +30,22 @@ def get_user_by_email(email:str):
         cursor.close()
         conn.close()
 
+def get_user_by_id(user_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT id, email, created_at FROM users WHERE id = %s",
+        (user_id,)
+    )
+
+    user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return user
+
 def get_all_users():
     conn = get_connection()
     cursor = conn.cursor()

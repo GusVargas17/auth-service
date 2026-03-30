@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.services.auth_service import register_user, login_user
-from app.repositories.user_repository import get_all_users, get_user_by_email
+from app.repositories.user_repository import get_all_users, get_user_by_email, get_user_by_id
 from app.schemas.auth_schema import RegisterRequest, LoginRequest
 from app.core.security.dependencies import get_current_user
 
@@ -37,3 +37,14 @@ def users(
         return {"user": user}
 
     return {"users": get_all_users()}
+
+@router.get("/me")
+def get_me(current_user: dict = Depends(get_current_user)):
+    user_id = int(current_user["sub"])
+
+    user = get_user_by_id(user_id)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"user": user}
