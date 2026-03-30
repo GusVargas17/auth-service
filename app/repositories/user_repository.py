@@ -56,3 +56,10 @@ def get_all_users():
     finally:
         cursor.close()
         conn.close()
+
+def map_user(user_tuple):
+    return {
+        "id": user_tuple[0],
+        "email": user_tuple[1],
+        "created_id": user_tuple[2]
+    }
