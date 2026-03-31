@@ -1,4 +1,4 @@
-from app.repositories.user_repository import create_user, get_user_by_email
+from app.repositories.user_repository import create_user, get_user_with_password
 from app.core.security.jwt_handler import create_access_token
 from app.core.security.password_handler import hash_password, verify_password
 
@@ -10,7 +10,7 @@ def register_user(email: str, password: str):
     return {"message": "User created"}
 
 def login_user(email: str, password: str):
-    user = get_user_by_email(email)
+    user = get_user_with_password(email)
 
     if not user:
         return None

@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, HTTPException, Depends
 from app.services.auth_service import register_user, login_user
 from app.repositories.user_repository import get_all_users, get_user_by_email, get_user_by_id, map_user
@@ -23,7 +24,7 @@ def login_endpoint(data: LoginRequest):
 
     return result
 
-@router.get("/users")
+@router.get("/users", response_model=List[UserResponse])
 def users(
     email: str = None,
     current_user: dict = Depends(get_current_user)
@@ -35,9 +36,11 @@ def users(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        return {"user": user}
+        return [map_user(user)]
 
-    return {"users": get_all_users()}
+    users = get_all_users()
+
+    return [map_user(user) for user in users]
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: dict = Depends(get_current_user)):

@@ -16,7 +16,21 @@ def create_user(email: str, password: str):
         cursor.close()
         conn.close()
 
-def get_user_by_email(email:str):
+def get_user_by_email(email: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT id, email, created_at FROM users WHERE email = %s",
+            (email,)
+        )
+        return cursor.fetchone()
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_user_with_password(email:str):
     conn = get_connection()
     cursor = conn.cursor()
 
