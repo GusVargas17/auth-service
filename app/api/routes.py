@@ -1,8 +1,7 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends
-from app.services.auth_service import (
-    register_user, 
-    login_user,
+from app.services.auth_service import register_user, login_user
+from app.services.user_service import (
     get_all_users_service,
     get_user_by_email_service,
     get_user_by_id_service
