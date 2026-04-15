@@ -29,20 +29,20 @@ def login_endpoint(data: LoginRequest):
     return result
 
 @router.get("/users", response_model=List[UserResponse])
-def users(
-    email: str = None,
+def users(current_user: dict = Depends(get_current_user)):
+    return get_all_users_service()
+
+@router.get("/users/{user_id}", response_model=UserResponse)
+def get_user_by_id(
+    user_id: int,
     current_user: dict = Depends(get_current_user)
 ):
+    user = get_user_by_id_service(user_id)
 
-    if email:
-        user = get_user_by_email_service(email)
-
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        return [user]
-
-    return get_all_users_service()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return user
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: dict = Depends(get_current_user)):
