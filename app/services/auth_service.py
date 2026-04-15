@@ -3,6 +3,12 @@ from app.core.security.jwt_handler import create_access_token
 from app.core.security.password_handler import hash_password, verify_password
 
 def register_user(email: str, password: str):
+    if " " in password:
+        raise ValueError("Password must not contain spaces")
+
+    if password.islower() or password.isalpha():
+        raise ValueError("Password must contain numbers or symbols")
+
     hashed_password = hash_password(password)
 
     create_user(email, hashed_password)

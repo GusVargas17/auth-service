@@ -15,6 +15,8 @@ router = APIRouter()
 def create_user_endpoint(data: RegisterRequest):
     try:
         return register_user(data.email, data.password)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception:
         raise HTTPException(status_code=409, detail="Email already exists")
 
