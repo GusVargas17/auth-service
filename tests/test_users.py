@@ -21,7 +21,8 @@ def test_users_no_token():
 
     assert response.status_code == 403 or response.status_code == 401
 
-def test_users_requires_admin(client, get_token):
+def test_users_requires_admin(client, create_user, get_token):
+    create_user("test@test.com", "1234567a")
     token = get_token()
 
     response = client.get(
@@ -46,11 +47,12 @@ def test_user_cannot_access_other_user(client, create_user, get_token):
 
     assert response.status_code == 403
 
-def test_users_with_admin(client, get_token, make_admin):
+def test_users_with_admin(client,create_user, get_token, make_admin):
     email = "admin@test.com"
 
-    token = get_token(email)
+    create_user(email, "1234567a")
     make_admin(email)
+    token = get_token(email)
 
     response = client.get(
         "/users",

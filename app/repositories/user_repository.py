@@ -1,7 +1,12 @@
 from app.core.db import get_connection
 
-def create_user(email: str, password: str, role: str):
-    conn = get_connection()
+def create_user(email: str, password: str, role: str, conn=None):
+    own_conn = False
+
+    if conn is None:
+        conn = get_connection()
+        own_conn = True
+
     cursor = conn.cursor()
 
     try:
@@ -10,11 +15,13 @@ def create_user(email: str, password: str, role: str):
             (email, password, role)
         )
 
-        conn.commit()
+        if own_conn:
+            conn.commit()
 
     finally:
         cursor.close()
-        conn.close()
+        if own_conn:
+            conn.close()
 
 def get_user_by_email(email: str):
     conn = get_connection()

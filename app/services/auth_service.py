@@ -2,7 +2,7 @@ from app.repositories.user_repository import create_user,get_user_with_password
 from app.core.security.jwt_handler import create_access_token
 from app.core.security.password_handler import hash_password, verify_password
 
-def register_user(email: str, password: str):
+def register_user(email: str, password: str, conn=None):
     if " " in password:
         raise ValueError("Password must not contain spaces")
 
@@ -11,7 +11,7 @@ def register_user(email: str, password: str):
 
     hashed_password = hash_password(password)
 
-    create_user(email, hashed_password, role="user")
+    create_user(email, hashed_password, role="user", conn=conn)
     
     return {"message": "User created"}
 
