@@ -21,7 +21,7 @@ def test_users_no_token():
 
     assert response.status_code == 403 or response.status_code == 401
 
-def test_users_requires_admin():
+def test_users_requires_admin(client, get_token):
     token = get_token()
 
     response = client.get(
@@ -31,23 +31,13 @@ def test_users_requires_admin():
 
     assert response.status_code == 403
 
-def test_user_cannot_access_other_user():
+def test_user_cannot_access_other_user(client, create_user, get_token):
     # user1
-    client.post("/create-user", json={
-        "email": "user1@test.com",
-        "password": "1234567a"
-    })
-
-    token1 = client.post("/login", json={
-        "email": "user1@test.com",
-        "password": "1234567a"
-    }).json()["access_token"]
+    create_user("user1@test.com", "1234567a")
+    token1 = get_token("user1@test.com", "1234567a")
 
     # user2
-    client.post("/create-user", json={
-        "email": "user2@test.com",
-        "password": "1234567a"
-    })
+    create_user("user2@test.com", "1234567a")
 
     response = client.get(
         "/users/2",
@@ -56,33 +46,11 @@ def test_user_cannot_access_other_user():
 
     assert response.status_code == 403
 
-def test_users_with_admin():
+def test_users_with_admin(client, get_token, make_admin):
     email = "admin@test.com"
 
-    client.post("/create-user", json={
-        "email": email,
-        "password": "1234567a"
-    })
-
-    from app.core.db import get_connection
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "UPDATE users SET role = 'admin' WHERE email = %s",
-        (email,)
-    )
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    response = client.post("/login", json={
-        "email": email,
-        "password": "1234567a"
-    })
-
-    token = response.json()["access_token"]
+    token = get_token(email)
+    make_admin(email)
 
     response = client.get(
         "/users",
