@@ -1,13 +1,13 @@
 from app.core.db import get_connection
 
-def create_user(email: str, password: str):
+def create_user(email: str, password: str, role: str):
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
         cursor.execute(
-            "INSERT INTO users (email, password) VALUES (%s, %s)",
-            (email, password)
+            "INSERT INTO users (email, password, role) VALUES (%s, %s, %s)",
+            (email, password, role)
         )
 
         conn.commit()
@@ -36,7 +36,7 @@ def get_user_with_password(email:str):
 
     try:
         cursor.execute(
-            "SELECT id, email, password FROM users WHERE email = %s",
+            "SELECT id, email, password, role FROM users WHERE email = %s",
             (email,)
         )
         return cursor.fetchone()

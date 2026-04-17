@@ -6,12 +6,12 @@ def register_user(email: str, password: str):
     if " " in password:
         raise ValueError("Password must not contain spaces")
 
-    if password.islower() or password.isalpha():
+    if password.isalpha():
         raise ValueError("Password must contain numbers or symbols")
 
     hashed_password = hash_password(password)
 
-    create_user(email, hashed_password)
+    create_user(email, hashed_password, role="user")
     
     return {"message": "User created"}
 
@@ -26,7 +26,10 @@ def login_user(email: str, password: str):
     if not verify_password(password, stored_password):
         return None
 
-    token = create_access_token({"sub": str(user[0])})
+    token = create_access_token({
+        "sub": str(user[0]),
+        "role": user[3]
+    })
 
     return {
         "access_token": token,
