@@ -11,8 +11,8 @@ def map_user(user_tuple):
         "created_at": user_tuple[2]
     }
 
-def get_all_users_service():
-    users = get_all_users()
+def get_all_users_service(conn):
+    users = get_all_users(conn)
     return [map_user(user) for user in users]
 
 def get_user_by_email_service(email: str):
@@ -23,8 +23,8 @@ def get_user_by_email_service(email: str):
 
     return map_user(user)
 
-def get_user_by_id_service(user_id: int):
-    user = get_user_by_id(user_id)
+def get_user_by_id_service(user_id: int, conn):
+    user = get_user_by_id(user_id, conn)
 
     if not user:
         return None

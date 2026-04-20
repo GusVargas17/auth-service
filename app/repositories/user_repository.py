@@ -23,8 +23,7 @@ def create_user(email: str, password: str, role: str, conn=None):
         if own_conn:
             conn.close()
 
-def get_user_by_email(email: str):
-    conn = get_connection()
+def get_user_by_email(email: str, conn):
     cursor = conn.cursor()
 
     try:
@@ -35,10 +34,14 @@ def get_user_by_email(email: str):
         return cursor.fetchone()
     finally:
         cursor.close()
-        conn.close()
 
-def get_user_with_password(email:str):
-    conn = get_connection()
+def get_user_with_password(email:str, conn=None):
+    own_conn = False
+
+    if conn is None:
+        conn = get_connection()
+        own_conn = True
+
     cursor = conn.cursor()
 
     try:
@@ -49,10 +52,10 @@ def get_user_with_password(email:str):
         return cursor.fetchone()
     finally:
         cursor.close()
-        conn.close()
+        if own_conn:
+            conn.close()
 
-def get_user_by_id(user_id: int):
-    conn = get_connection()
+def get_user_by_id(user_id: int, conn):
     cursor = conn.cursor()
 
     cursor.execute(
@@ -63,12 +66,10 @@ def get_user_by_id(user_id: int):
     user = cursor.fetchone()
 
     cursor.close()
-    conn.close()
 
     return user
 
-def get_all_users():
-    conn = get_connection()
+def get_all_users(conn):
     cursor = conn.cursor()
 
     try:
@@ -76,4 +77,3 @@ def get_all_users():
         return cursor.fetchall()
     finally:
         cursor.close()
-        conn.close()

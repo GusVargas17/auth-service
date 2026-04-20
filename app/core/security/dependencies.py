@@ -1,6 +1,10 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.security.jwt_handler import verify_token
+from app.core.db import get_connection
+
+def get_db():
+    return get_connection()
 
 security = HTTPBearer()
 

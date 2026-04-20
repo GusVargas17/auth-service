@@ -1,22 +1,7 @@
 from fastapi.testclient import TestClient
 from main import app
 
-client = TestClient(app)
-
-def get_token():
-    client.post("/create-user", json={
-        "email": "user@test.com",
-        "password": "1234567a"
-    })
-
-    response = client.post("/login", json={
-        "email": "user@test.com",
-        "password": "1234567a"
-    })
-
-    return response.json()["access_token"]
-
-def test_users_no_token():
+def test_users_no_token(client):
     response = client.get("/users")
 
     assert response.status_code == 403 or response.status_code == 401

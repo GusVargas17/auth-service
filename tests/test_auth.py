@@ -1,8 +1,6 @@
 from fastapi.testclient import TestClient
 from main import app
 
-client = TestClient(app)
-
 def test_login_success(client, create_user):
     create_user("test@test.com", "1234567a")
 

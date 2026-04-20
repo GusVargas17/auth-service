@@ -7,7 +7,7 @@ from app.services.user_service import (
 )
 from app.schemas.auth_schema import RegisterRequest, LoginRequest
 from app.schemas.user_schema import UserResponse
-from app.core.security.dependencies import get_current_user, require_role
+from app.core.security.dependencies import get_current_user, require_role, get_db
 
 router = APIRouter()
 
@@ -30,18 +30,22 @@ def login_endpoint(data: LoginRequest):
     return result
 
 @router.get("/users", response_model=List[UserResponse])
-def users(current_user: dict = Depends(require_role("admin"))):
-    return get_all_users_service()
+def users(
+    current_user: dict = Depends(require_role("admin")),
+    db = Depends(get_db)
+):
+    return get_all_users_service(db)
 
 @router.get("/users/{user_id}", response_model=UserResponse)
 def get_user_by_id(
     user_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user),
+    db = Depends(get_db)
 ):
     if current_user["sub"] != str(user_id) and current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    user = get_user_by_id_service(user_id)
+    user = get_user_by_id_service(user_id, db)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
