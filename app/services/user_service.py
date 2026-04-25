@@ -15,8 +15,8 @@ def get_all_users_service(conn):
     users = get_all_users(conn)
     return [map_user(user) for user in users]
 
-def get_user_by_email_service(email: str):
-    user = get_user_by_email(email)
+def get_user_by_email_service(email: str, conn):
+    user = get_user_by_email(email, conn)
 
     if not user:
         return None

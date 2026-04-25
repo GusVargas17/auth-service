@@ -12,17 +12,23 @@ from app.core.security.dependencies import get_current_user, require_role, get_d
 router = APIRouter()
 
 @router.post("/create-user")
-def create_user_endpoint(data: RegisterRequest):
+def create_user_endpoint(
+    data: RegisterRequest,
+    db = Depends(get_db)
+):
     try:
-        return register_user(data.email, data.password)
+        return register_user(data.email, data.password, conn=db)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
         raise HTTPException(status_code=409, detail="Email already exists")
 
 @router.post("/login")
-def login_endpoint(data: LoginRequest):
-    result = login_user(data.email, data.password)
+def login_endpoint(
+    data: LoginRequest,
+    db = Depends(get_db)
+):
+    result = login_user(data.email, data.password, conn=db)
 
     if not result:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -53,10 +59,13 @@ def get_user_by_id(
     return user
 
 @router.get("/me", response_model=UserResponse)
-def get_me(current_user: dict = Depends(get_current_user)):
+def get_me(
+    current_user: dict = Depends(get_current_user),
+    db = Depends(get_db)
+):
     user_id = int(current_user["sub"])
 
-    user = get_user_by_id_service(user_id)
+    user = get_user_by_id_service(user_id, db)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
