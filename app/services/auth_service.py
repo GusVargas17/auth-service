@@ -1,6 +1,6 @@
 from app.repositories.user_repository import create_user,get_user_with_password
 from app.core.db import get_connection
-from app.core.security.jwt_handler import create_access_token
+from app.core.security.jwt_handler import create_access_token, create_refresh_token
 from app.core.security.password_handler import hash_password, verify_password
 
 def register_user(email: str, password: str, conn=None):
@@ -40,18 +40,17 @@ def login_user(email: str, password: str, conn):
 
     if not user:
         return None
-    
-    stored_password = user[2]
 
-    if not verify_password(password, stored_password):
+    if not verify_password(password, user[2]):
         return None
 
-    token = create_access_token({
+    payload = {
         "sub": str(user[0]),
         "role": user[3]
-    })
+    }
 
     return {
-        "access_token": token,
+        "access_token": create_access_token(payload),
+        "refresh_token": create_refresh_token(payload),
         "token_type": "bearer"
     }

@@ -43,3 +43,21 @@ def test_token_expiration(client, create_user):
     )
 
     assert response.status_code == 401
+
+def test_refresh_token(client, create_user):
+    create_user("test@test.com", "1234567a")
+
+    login = client.post("/login", json={
+        "email": "test@test.com", 
+        "password": "1234567a"
+    })
+
+    data = login.json()
+    refresh = data["refresh_token"]
+
+    response = client.post("/refresh", json={
+        "refresh_token": refresh
+    })
+
+    assert response.status_code == 200
+    assert "access_token" in response.json()

@@ -1,12 +1,13 @@
 from typing import List
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Body
 from app.services.auth_service import register_user, login_user
 from app.services.user_service import (
     get_all_users_service,
     get_user_by_id_service
 )
-from app.schemas.auth_schema import RegisterRequest, LoginRequest
+from app.schemas.auth_schema import RegisterRequest, LoginRequest, RefreshRequest
 from app.schemas.user_schema import UserResponse
+from app.core.security.jwt_handler import create_access_token ,verify_token
 from app.core.security.dependencies import get_current_user, require_role, get_db
 
 router = APIRouter()
@@ -71,3 +72,20 @@ def get_me(
         raise HTTPException(status_code=404, detail="User not found")
     
     return user
+
+@router.post("/refresh")
+def refresh_token(data: RefreshRequest):
+    payload = verify_token(data.refresh_token)
+
+    if not payload or payload.get("type") != "refresh":
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+    new_access_token = create_access_token({
+        "sub": payload["sub"],
+        "role": payload["role"]
+    })
+
+    return {
+        "access_token": new_access_token,
+        "token_type": "bearer"
+    }
